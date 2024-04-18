@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sales-count/config"
 	"sales-count/queryBuilder"
 	"strings"
@@ -22,7 +24,22 @@ var (
 )
 
 func main() {
-	cfg, err := config.LoadConfig("config.yml")
+	execPath, err := os.Executable()
+	if err != nil {
+		log.Fatal("Error getting executable path:", err)
+	}
+
+	// Get the directory of the executable
+	execDir := filepath.Dir(execPath)
+
+	// Construct the absolute path to the config.yml file
+	configPath := filepath.Join(execDir, "config.yml")
+
+	// Load the configuration using the absolute path
+	cfg, err = config.LoadConfig(configPath)
+	if err != nil {
+		log.Fatal("Error loading configuration:", err)
+	}
 
 	bot, err = tgbotapi.NewBotAPI(cfg.BotToken)
 	if err != nil {
@@ -308,6 +325,11 @@ func calculateSumFromResponse(response Response) (float64, error) {
 }
 
 func isAdmin(userID int64) bool {
+	if cfg == nil {
+		log.Println("Configuration is not initialized")
+		return false
+	}
+
 	for _, adminID := range cfg.AdminIDs {
 		if userID == adminID {
 			return true

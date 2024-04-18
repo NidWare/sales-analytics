@@ -1,44 +1,31 @@
 #!/bin/bash
-# Set the name of your Docker image and container
-IMAGE_NAME="your-app-name"
-CONTAINER_NAME="your-app-container"
 
-# Function to start the container
-start_container() {
-    echo "Stopping and removing existing container (if any)..."
-    docker stop $CONTAINER_NAME || true
-    docker rm $CONTAINER_NAME || true
+# Set the name of the Docker image and container
+IMAGE_NAME="your-image-name"
+CONTAINER_NAME="your-container-name"
 
-    echo "Building Docker image..."
-    docker build -t $IMAGE_NAME .
+# Set the database file path relative to the current working directory
+DB_FILE_PATH="$(pwd)/database.db"
 
-    echo "Starting container..."
-    docker run -d --name $CONTAINER_NAME -p 8080:8080 -v $(pwd):/app $IMAGE_NAME
+# Stop and remove the existing container (if it exists)
+if docker ps -a --format '{{.Names}}' | grep -q $CONTAINER_NAME; then
+    echo "Stopping and removing the existing container..."
+    docker stop $CONTAINER_NAME
+    docker rm $CONTAINER_NAME
+fi
 
-    echo "Checking container logs..."
-    docker logs $CONTAINER_NAME
+# Remove the existing image (if it exists)
+if docker images --format '{{.Repository}}' | grep -q $IMAGE_NAME; then
+    echo "Removing the existing image..."
+    docker rmi $IMAGE_NAME
+fi
 
-    echo "Checking container status..."
-    docker ps -a | grep $CONTAINER_NAME
-}
+# Build the Docker image
+echo "Building the Docker image..."
+docker build -t $IMAGE_NAME .
 
-# Function to stop the container
-stop_container() {
-    echo "Stopping container..."
-    docker stop $CONTAINER_NAME || true
-    echo "Container stopped successfully."
-}
+# Run the Docker container with the mounted database file
+echo "Running the Docker container..."
+docker run --name $CONTAINER_NAME -d -v "$DB_FILE_PATH:/app/database.db" $IMAGE_NAME
 
-# Check the command line argument and call the corresponding function
-case "$1" in
-    start)
-        start_container
-        ;;
-    stop)
-        stop_container
-        ;;
-    *)
-        echo "Usage: $0 {start|stop}"
-        exit 1
-        ;;
-esac
+echo "Docker container is up and running with the mounted database file!"
