@@ -9,4 +9,4 @@ FROM --platform=linux/amd64 alpine:latest
 WORKDIR /app
 COPY --from=build /app/main .
 RUN ls -l
-CMD ["./main"]
+CMD ["/bin/sh", "-c", "./main"]
