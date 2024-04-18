@@ -1,12 +1,6 @@
-# Build stage
-FROM --platform=linux/amd64 golang:1.21.1 AS build
+FROM --platform=linux/amd64 golang:1.21.1
 WORKDIR /app
 COPY . .
 RUN go build -o main .
-
-# Final stage
-FROM --platform=linux/amd64 alpine:latest
-WORKDIR /app
-COPY --from=build /app/main .
 RUN ls -l
-CMD ["/bin/sh", "-c", "./main"]
+CMD ["./main"]
