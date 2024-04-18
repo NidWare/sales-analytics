@@ -1,27 +1,15 @@
-# Use the latest version of the official Golang image as the base image
-FROM golang:1.20
+# Build stage
+FROM golang:1.21.1 AS build
 
-# Set the working directory inside the container
 WORKDIR /app
-
-# Copy the Go module files to the working directory
 COPY go.mod go.sum ./
-
-# Download the Go module dependencies
 RUN go mod download
 
-# Copy the application source code to the working directory
 COPY . .
+RUN go build -o main .
 
-# Build the Golang application
-RUN GOARCH=arm64 go build -o main .
-
-# Mount the current directory as a volume to persist file changes
-VOLUME ["/app"]
-
-# Expose the port on which your application will run (replace 8080 with your desired port)
-EXPOSE 8080
-RUN chmod +x main
-
-# Set the command to run your application
+# Final stage
+FROM gcr.io/distroless/static
+WORKDIR /app
+COPY --from=build /app/main .
 CMD ["./main"]
