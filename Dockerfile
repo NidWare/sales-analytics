@@ -1,5 +1,5 @@
 # Use the latest version of the official Golang image as the base image
-FROM golang:1.20-bullseye
+FROM golang:1.23-bullseye
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the Golang application
-RUN go build -o main .
+RUN GOARCH=arm64 go build -o main .
 
 # Mount the current directory as a volume to persist file changes
 VOLUME ["/app"]
