@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Set the name of your Docker image and container
 IMAGE_NAME="your-app-name"
 CONTAINER_NAME="your-app-container"
@@ -15,7 +14,12 @@ start_container() {
 
     echo "Starting container..."
     docker run -d --name $CONTAINER_NAME -p 8080:8080 -v $(pwd):/app $IMAGE_NAME
-    echo "Container started successfully."
+
+    echo "Checking container logs..."
+    docker logs $CONTAINER_NAME
+
+    echo "Checking container status..."
+    docker ps -a | grep $CONTAINER_NAME
 }
 
 # Function to stop the container
