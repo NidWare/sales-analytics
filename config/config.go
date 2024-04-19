@@ -1,11 +1,8 @@
 package config
 
 import (
-	_ "fmt"
-	_ "log"
-	"os"
-
 	"gopkg.in/yaml.v2"
+	"os"
 )
 
 type Config struct {
@@ -14,18 +11,19 @@ type Config struct {
 	AdminIDs   []int64 `yaml:"admin_ids"`
 }
 
-func LoadConfig(filename string) (*Config, error) {
-	file, err := os.Open(filename)
+func LoadConfig(path string) (*Config, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	var config Config
+	var cfg Config
 	decoder := yaml.NewDecoder(file)
-	if err := decoder.Decode(&config); err != nil {
+	err = decoder.Decode(&cfg)
+	if err != nil {
 		return nil, err
 	}
 
-	return &config, nil
+	return &cfg, nil
 }
