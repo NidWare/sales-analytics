@@ -105,7 +105,6 @@ func (b *AsanaTaskSearchBuilder) Build() string {
 		q.Set("completed_since", b.completedBefore.Format(time.RFC3339))
 	}
 
-	q.Set("completed", strconv.FormatBool(b.completed))
 	q.Set("sort_by", b.sortBy)
 	q.Set("sort_ascending", strconv.FormatBool(b.sortAscending))
 
