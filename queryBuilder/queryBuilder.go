@@ -101,12 +101,8 @@ func (b *AsanaTaskSearchBuilder) Build() string {
 		q.Set("projects.any", strings.Join(b.projectIDs, ","))
 	}
 
-	if !b.completedBefore.IsZero() {
-		q.Set("completed_at.before", b.completedBefore.Format(time.RFC3339))
-	}
-
 	if !b.completedAfter.IsZero() {
-		q.Set("completed_at.after", b.completedAfter.Format(time.RFC3339))
+		q.Set("completed_since", b.completedAfter.Format(time.RFC3339))
 	}
 
 	q.Set("completed", strconv.FormatBool(b.completed))
